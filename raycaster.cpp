@@ -19,7 +19,9 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/#define mapWidth 8
+*/
+
+#define mapWidth 8
 #define mapHeight 8
 #define screenWidth 640
 #define screenHeight 480
@@ -29,8 +31,8 @@ int worldMap[mapWidth][mapHeight] =
   {1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,1},
+  {1,0,0,2,3,2,0,1},
+  {1,0,0,0,0,4,2,1},
   {1,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,1},
   {1,1,1,1,1,1,1,1},
@@ -125,6 +127,19 @@ int main(int argc, char argv[])
       {
         perpWallDist = (mapY - posY + (1 - stepY)/2)/rayDiry;
       }
+
+      int h = screenHeight;
+      // calculate line height
+      int lineheight = (int) (h/perpWallDist);
+
+      // calculate lowest and highest pixel to fill in curr stripe
+      int drawStart = - lineheight / 2 + h/2;
+      if (drawStart < 0) drawStart = 0;
+      int drawEnd = lineheight / 2 + h/2;
+      if (drawEnd > h) drawEnd = h - 1;
+      
+      // things left, adding SDL, incorporating framerate count & cap,
+      // rotating and moving player
     }
   }
 }
