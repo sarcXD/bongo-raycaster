@@ -3,7 +3,7 @@
 #define screenWidth 640
 #define screenHeight 480
 
-int map[mapWidth][mapHeight] = 
+int worldMap[mapWidth][mapHeight] = 
 {
   {1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,1},
@@ -17,7 +17,7 @@ int map[mapWidth][mapHeight] =
 
 int main(int argc, char argv[])
 {
-  double posX = 2, posY = 2; // initial position vector
+  double posX = 2.0, posY = 2.0; // initial position vector
   double dirX = 1, dirY = 0; // initial direction vector
   double planeX = 0, planeY = 0.66; //2d raycaster camera plane, fov 66deg
 
@@ -48,7 +48,7 @@ int main(int argc, char argv[])
       // length of ray from 1 x/y to next x/y block
       double deltaDistX = std::abs(1/rayDirx);
       double deltaDistY = std::abs(1/rayDiry);
-      double prepWallDist;
+      double perpWallDist;
 
       // direction to step in x/y direction (+1/-1)
       int stepX;
@@ -56,6 +56,54 @@ int main(int argc, char argv[])
 
       int hit=0;
       int side; //NS wall or EW wall?
+
+      // calculate step and initial sideDist
+      if (rayDirx < 0)
+      {
+        stepX = -1;
+        sideDistX = (mapX - posX) * deltaDistX;
+      }
+      else {
+        stepX = 1;
+        sideDistX = (mapX + 1.0 - posX) * deltaDistX;
+      }
+      if (rayDiry < 0)
+      {
+        stepY = -1;
+        sideDistY = (mapY - posY) * deltaDistY;
+      }
+      else {
+        stepY = 1;
+        sideDistY = (mapY + 1.0 - posY) * deltaDistY;
+      }
+
+      //perform DDA
+      while (hit == 0)
+      {
+        // jumpt to next map square, Or in x-direction, Or in y-direction
+        if (sideDistX < sideDistY)
+        {
+          sideDistX += deltaDistX;
+          mapX += stepX;
+          side = 0;
+        }
+        else
+        {
+          sideDistY += deltaDistY;
+          mapY += stepY;
+          side = 1;
+        }
+        if (worldMap[mapX][mapY] > 0) hit = 1;
+      }
+      // calculating distance from wall the ray hit
+      if (side == 0) 
+      {
+        perpWallDist = (mapX - posX + (1 - stepX)/2)/rayDirx;
+      }
+      else
+      {
+        perpWallDist = (mapY - posY + (1 - stepY)/2)/rayDiry;
+      }
     }
   }
 }
